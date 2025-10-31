@@ -1,9 +1,8 @@
 # TODO
-# Make the program refresh between file changes. Directory should be updated to reflect the moved file being gone and any remaining still visible
-# Make the TV show info and Movie info frames only visible when the currently selected media file is of the corresponding type
-# Make capable to do only one assignment at a time. If a designation is made, any previously designated files are reverted to Unassigned
-
-#test edit
+# Create new window for input when selecting the media type.
+# Allow a default directory to be set
+# Allow choosing a destination directory
+# Organize code, maybe split into multiple files
 
 import os
 import shutil
