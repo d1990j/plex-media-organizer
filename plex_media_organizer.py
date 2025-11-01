@@ -94,13 +94,14 @@ def organize_files():
             new_path = os.path.join(dest_dir, f"{folder_name}{ext}")
             shutil.move(old_path, new_path)
         elif m["type"] == "TV":
-            show = show_name_entry.get().strip() or "Uknown Show"
+            show = show_name_entry.get().strip() or "Unknown Show"
+            year = show_year_entry.get().strip() or ""
             season = show_season_entry.get().strip() or "1"
             episode = show_episode_entry.get().strip() or "1"
-            dest_dir = os.path.join(base_dir, "TV Shows", show, f"Season {season.zfill(2)}")
+            dest_dir = os.path.join(base_dir, "TV Shows", f"{show} ({year})", f"Season {season.zfill(2)}")
             os.makedirs(dest_dir, exist_ok=True)
             ext = os.path.splitext(m["name"])[1]
-            new_name = f"{show} - S{season.zfill(2)}E{episode.zfill(2)}{ext}"
+            new_name = f"{show} ({year}) - S{season.zfill(2)}E{episode.zfill(2)}{ext}"
             new_path = os.path.join(dest_dir, new_name)
             shutil.move(old_path, new_path)
 
@@ -112,8 +113,6 @@ def clear_entries():
     movie_title_entry.delete(0, tk.END)
     movie_year_entry.delete(0, tk.END)
     show_episode_entry.delete(0, tk.END)
-    show_name_entry.delete(0, tk.END)
-    show_season_entry.delete(0, tk.END)
 
 def enable_movie_info():
     # Enable the Movie Frame and disable the TV Frame
@@ -182,13 +181,17 @@ tk.Label(tv_frame, text="Show Name:").grid(row=0, column=0)
 show_name_entry = tk.Entry(tv_frame, width=25)
 show_name_entry.grid(row=0, column=1)
 
-tk.Label(tv_frame, text="Season:").grid(row=0,column=2)
-show_season_entry = tk.Entry(tv_frame, width=5)
-show_season_entry.grid(row=0, column=3)
+tk.Label(tv_frame, text="Year").grid(row=0, column=2)
+show_year_entry = tk.Entry(tv_frame, width=5)
+show_year_entry.grid(row=0, column=3)
 
-tk.Label(tv_frame, text="Episode:").grid(row=0, column=4)
+tk.Label(tv_frame, text="Season:").grid(row=0,column=4)
+show_season_entry = tk.Entry(tv_frame, width=5)
+show_season_entry.grid(row=0, column=5)
+
+tk.Label(tv_frame, text="Episode:").grid(row=0, column=6)
 show_episode_entry = tk.Entry(tv_frame, width=5)
-show_episode_entry.grid(row=0, column=5)
+show_episode_entry.grid(row=0, column=7)
 
 #Organize button
 organize_button = tk.Button(root, text="Organize files", command=organize_files, bg="lightgreen")
