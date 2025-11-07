@@ -1,8 +1,11 @@
 # TODO
-# Create new window for input when selecting the media type.
-# Allow a default directory to be set
-# Allow choosing a destination directory
-# Organize code, maybe split into multiple files
+# >>Create new window for input when selecting the media type.
+# >>Allow choosing a destination directory
+# >>Organize code, maybe split into multiple files
+
+# >>>>>>>New Features<<<<<<<<
+# >>Allow editing file details, can select files in library and edit title, number, date, etc and necessary folder updates will be made
+# >>Allow a default directory to be set
 
 import os
 import shutil
