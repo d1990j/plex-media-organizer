@@ -135,7 +135,7 @@ def enable_tv_info():
     organize_button.pack_forget()
     organize_button.pack(pady=10)
 
-# Build the interface
+######### Build the interface #############
 
 #Folder section
 top_frame = tk.Frame(root)
