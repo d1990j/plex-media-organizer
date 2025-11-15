@@ -19,10 +19,10 @@ def retrieve_files(directory):
 
     return media_files
 
-def organize_movie(current_directory: str, file: dict, title: str, year: str):
+def organize_movie(current_directory: str, destination: str, file: dict, title: str, year: str):
     """Organize the movie into the appropriate format of folders and titles."""
     # create the organized folder if not existing
-    base_dir = os.path.join(current_directory, "Organized")
+    base_dir = os.path.join(destination, "Organized")
     os.makedirs(base_dir, exist_ok=True)
 
     # Record the old path to the file
@@ -38,10 +38,10 @@ def organize_movie(current_directory: str, file: dict, title: str, year: str):
     new_path = os.path.join(dest_dir, f"{folder_name}{ext}")
     shutil.move(old_path, new_path)
 
-def orgainze_tv(current_directory: str, file: dict, show: str, year: str, season: str, episode: str):
+def orgainze_tv(current_directory: str, destination: str, file: dict, show: str, year: str, season: str, episode: str):
     """Organize the tv episode into the appropriate format of folders and titles."""
      # create the organized folder if not existing
-    base_dir = os.path.join(current_directory, "Organized")
+    base_dir = os.path.join(destination, "Organized")
     os.makedirs(base_dir, exist_ok=True)
 
     # Record the old path to the file

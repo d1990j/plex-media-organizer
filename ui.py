@@ -16,6 +16,7 @@ class MediaOrganizerUI:
         self.current_directory = logic.get_default_directory()
         self.media_files = [] # (filename type)
         self.selected_file = dict()
+        self.destination_directory = ""
 
         # Set up folder section
         top_frame = tk.Frame(self.root)
@@ -79,8 +80,21 @@ class MediaOrganizerUI:
         self.show_episode_entry = tk.Entry(self.tv_frame, width=5)
         self.show_episode_entry.grid(row=0, column=7)
 
+        # Destination Button
+        self.destination_button = tk.Button(root, text="Destination", command=self.set_destination_directory)
+
+        # Destination Label
+        self.destination_frame = tk.Frame(self.root)
+        self.destination_label = tk.Label(self.destination_frame, text=self.destination_directory if self.destination_directory else "No destination selected")
+        self.destination_label.pack(side=tk.LEFT)
+        #
+
         # Organize Button
-        self.organize_button = tk.Button(root, text="Organize files", bg="lightgreen", command=self.organize_files)
+        self.organize_button = tk.Button(root, text="Organize files", bg="red", command=self.organize_files)
+
+        # If there was a default directory, load media files
+        if self.current_directory:
+            self.load_media_files()
 
     # Enable/disable movie and tv info
     def enable_movie_info(self):
@@ -89,9 +103,16 @@ class MediaOrganizerUI:
         self.tv_frame.pack_forget()
         self.movie_frame.pack(pady=5)
 
+        # Reset the destination button
+        self.destination_button.pack_forget()
+        self.destination_button.pack(pady=10)
+        self.destination_frame.pack_forget()
+        self.destination_frame.pack(pady=10)
+
         # Reset the organize button
         self.organize_button.pack_forget()
         self.organize_button.pack(pady=10)
+        self.organize_button.config(bg="lightgreen" if self.destination_directory else "red")
 
     def enable_tv_info(self):
         """Configure available buttons based on media type."""
@@ -99,9 +120,16 @@ class MediaOrganizerUI:
         self.movie_frame.pack_forget()
         self.tv_frame.pack(pady=5)
 
+        # Reset the destination button
+        self.destination_button.pack_forget()
+        self.destination_button.pack(pady=10)
+        self.destination_frame.pack_forget()
+        self.destination_frame.pack(pady=10)
+
         # Reset the organize button
         self.organize_button.pack_forget()
         self.organize_button.pack(pady=10)
+        self.organize_button.config(bg="lightgreen" if self.destination_directory else "red")
 
     # Clear all entry fields
     def clear_entries(self):
@@ -195,6 +223,10 @@ class MediaOrganizerUI:
         if not self.current_directory:
             messagebox.showwarning("Warning", "Select a folder first")
             return
+
+        if not self.destination_directory:
+            messagebox.showwarning("Warning", "Select a destination folder.")
+            return
         
         # Get currently selected file and organize
         try:
@@ -203,7 +235,7 @@ class MediaOrganizerUI:
             if file["type"] == "Movie":
                 title = self.movie_title_entry.get().strip() or os.path.splitext(file["name"])[0]
                 year = self.movie_year_entry.get().strip()
-                logic.organize_movie(self.current_directory, file, title, year)
+                logic.organize_movie(self.current_directory, self.destination_directory, file, title, year)
 
                 messagebox.showinfo("Done", "Files have been organized into plex folders")
                 self.clear_entries()
@@ -214,7 +246,7 @@ class MediaOrganizerUI:
                 season = self.show_season_entry.get().strip() or "1"
                 episode = self.show_episode_entry.get().strip() or "1"
 
-                logic.orgainze_tv(self.current_directory, file, show, year, season, episode)
+                logic.orgainze_tv(self.current_directory, self.destination_directory, file, show, year, season, episode)
                 messagebox.showinfo("Done", "Files have been organized into plex folders")
                 self.clear_entries()
                 self.load_media_files() #refresh
@@ -224,7 +256,15 @@ class MediaOrganizerUI:
         except:
             messagebox.showwarning("Warning", "Select a file first")
 
+        self.organize_button.config(bg="red")
+
     def set_default_directory(self):
         """Button action to set default directory."""
         logic.set_default_directory(self.current_directory)
         messagebox.showinfo("Done", f"Default directory set to {self.current_directory}")
+
+    def set_destination_directory(self):
+        """Button action to set destination directory."""
+        self.destination_directory = filedialog.askdirectory(initialdir=self.current_directory if self.current_directory else os.getcwd())
+        self.destination_label.config(text=f"Folder: {self.destination_directory}")
+        self.organize_button.config(bg="lightgreen")
