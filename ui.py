@@ -3,6 +3,7 @@ from tkinter import filedialog, messagebox
 import os
 import logic
 import subprocess
+from configparser import ConfigParser
 
 class MediaOrganizerUI:
 
@@ -12,7 +13,7 @@ class MediaOrganizerUI:
         self.root.geometry("850x600")
 
         # Set up variables
-        self.current_directory = ""
+        self.current_directory = logic.get_default_directory()
         self.media_files = [] # (filename type)
         self.selected_file = dict()
 
@@ -23,7 +24,10 @@ class MediaOrganizerUI:
         self.browse_button = tk.Button(top_frame, text="Browse Folder", command=self.browse_directory)
         self.browse_button.pack(side=tk.LEFT, padx=5)
 
-        self.folder_label = tk.Label(top_frame, text="No folder selected")
+        self.default_button = tk.Button(top_frame, text="Set Default", command=self.set_default_directory)
+        self.default_button.pack(side=tk.LEFT, padx=5)
+
+        self.folder_label = tk.Label(top_frame, text=self.current_directory if self.current_directory else "No folder selected")
         self.folder_label.pack(side=tk.LEFT)
 
         # Set up file list
@@ -116,7 +120,6 @@ class MediaOrganizerUI:
             self.listbox.selection_set(index)
         except:
             messagebox.showwarning("Warning", "Select a file first")
-            print("Failure in update_media_type")
 
     # Refresh the list with updated media files
     def refresh_list(self):
@@ -129,6 +132,9 @@ class MediaOrganizerUI:
     # Browse for current directory
     def browse_directory(self):
         self.current_directory = filedialog.askdirectory()
+        self.load_media_files()
+
+    def load_media_files(self):
         # If a directory is chosen
         if self.current_directory:
             # Update the label to the currently selected directory
@@ -148,7 +154,7 @@ class MediaOrganizerUI:
                 file_type = file["type"]
                 file_name = file["name"]
                 self.listbox.insert(tk.END, f"[{file_type}] {file_name}")
-    
+
     # Play the selected file
     def play_selected(self):
         try:
@@ -162,7 +168,6 @@ class MediaOrganizerUI:
                 subprocess.call(["xdg-open", filepath])
         except:
             messagebox.showwarning("Warning", "Please select a file to play")
-            print("Failure in play_selected")
 
     # Mark as a movie or tv show
     def mark_as_movie(self):
@@ -178,7 +183,6 @@ class MediaOrganizerUI:
         # Make sure folder has been selected
         if not self.current_directory:
             messagebox.showwarning("Warning", "Select a folder first")
-            print("Failure in organize_files")
             return
         
         # Get currently selected file and organize
@@ -186,30 +190,29 @@ class MediaOrganizerUI:
             file = self.selected_file
 
             if file["type"] == "Movie":
-                print("Type of movie selected to be organized")
                 title = self.movie_title_entry.get().strip() or os.path.splitext(file["name"])[0]
                 year = self.movie_year_entry.get().strip()
                 logic.organize_movie(self.current_directory, file, title, year)
 
                 messagebox.showinfo("Done", "Files have been organized into plex folders")
                 self.clear_entries()
-                self.browse_directory() #refresh
+                self.load_media_files() #refresh
             elif file["type"] == "TV":
-                print("Type of tv selected to be organized")
                 show = self.show_name_entry.get().strip() or "Unknown Show"
                 year = self.show_year_entry.get().strip() or ""
                 season = self.show_season_entry.get().strip() or "1"
                 episode = self.show_episode_entry.get().strip() or "1"
 
-                print(f"{show} {year} {season} {episode} sent to organize tv")
                 logic.orgainze_tv(self.current_directory, file, show, year, season, episode)
-                print("logic done")
                 messagebox.showinfo("Done", "Files have been organized into plex folders")
                 self.clear_entries()
-                self.browse_directory() #refresh
+                self.load_media_files() #refresh
             else:
                 messagebox.showwarning("Warning", "Assign media type first")
 
         except:
             messagebox.showwarning("Warning", "Select a file first")
-            print("Failure in organize_files")
+
+    def set_default_directory(self):
+        logic.set_default_directory(self.current_directory)
+        messagebox.showinfo("Done", f"Default directory set to {self.current_directory}")

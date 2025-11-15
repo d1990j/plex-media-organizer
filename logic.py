@@ -2,6 +2,7 @@ import os
 import subprocess
 from tkinter import messagebox
 import shutil
+from configparser import ConfigParser
 
 def retrieve_files(directory):
     media_files = []
@@ -47,4 +48,28 @@ def orgainze_tv(current_directory: str, file: dict, show: str, year: str, season
     new_name = f"{show} ({year}) - S{season.zfill(2)}E{episode.zfill(2)}{ext}"
     new_path = os.path.join(dest_dir, new_name)
     shutil.move(old_path, new_path)
-     
+
+def get_default_directory():
+    config = ConfigParser()
+    default_dir = ""
+
+    try:
+        config.read("config.ini")
+        default_dir = config["DEFAULT"]["Directory"]
+        return default_dir
+    except:
+        print("Unable to open default directory")
+        return ""
+
+def set_default_directory(directory: str):
+    config = ConfigParser()
+
+    try:
+        config.read("config.ini")
+        config.add_section("DEFAULT")
+        config.set("DEFAULT", "Directory", directory)
+
+        with open("config.ini", "w") as f:
+            config.write(f)
+    except:
+        print("Unable to set default directory")
