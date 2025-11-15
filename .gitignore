@@ -4,3 +4,4 @@ __pycache__
 test_variables.py
 test.py
 test2.py
+/config.json

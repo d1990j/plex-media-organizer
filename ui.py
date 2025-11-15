@@ -84,6 +84,7 @@ class MediaOrganizerUI:
 
     # Enable/disable movie and tv info
     def enable_movie_info(self):
+        """Configure available buttons based on media type."""
         # Enable the Movie Frame and disable the TV Frame
         self.tv_frame.pack_forget()
         self.movie_frame.pack(pady=5)
@@ -93,6 +94,7 @@ class MediaOrganizerUI:
         self.organize_button.pack(pady=10)
 
     def enable_tv_info(self):
+        """Configure available buttons based on media type."""
         # Enable the TV Frame and disable the Movie Frame
         self.movie_frame.pack_forget()
         self.tv_frame.pack(pady=5)
@@ -103,12 +105,14 @@ class MediaOrganizerUI:
 
     # Clear all entry fields
     def clear_entries(self):
+        """Clear all user input."""
         self.movie_title_entry.delete(0, tk.END)
         self.movie_year_entry.delete(0, tk.END)
         self.show_episode_entry.delete(0, tk.END)
 
     # Update media to new type
     def update_media_type(self, new_type):
+        """Button action to change media type."""
         try:
             # Make sure only one file is assigned at a time
             for file in self.media_files:
@@ -123,6 +127,7 @@ class MediaOrganizerUI:
 
     # Refresh the list with updated media files
     def refresh_list(self):
+        """Clear all data in the listbox and repopulate with media files."""
         self.listbox.delete(0, tk.END)
         for m in self.media_files:
             self.listbox.insert(tk.END, f"[{m['type']}] {m['name']}")
@@ -131,10 +136,12 @@ class MediaOrganizerUI:
 
     # Browse for current directory
     def browse_directory(self):
-        self.current_directory = filedialog.askdirectory()
+        """Open a dialog to select a directory and then refresh the list."""
+        self.current_directory = filedialog.askdirectory(initialdir=self.current_directory if self.current_directory else os.getcwd())
         self.load_media_files()
 
     def load_media_files(self):
+        """Attempt to load the media files in the current directory."""
         # If a directory is chosen
         if self.current_directory:
             # Update the label to the currently selected directory
@@ -157,6 +164,7 @@ class MediaOrganizerUI:
 
     # Play the selected file
     def play_selected(self):
+        """Attempt to play the media file selected."""
         try:
             index = self.listbox.curselection()[0]
             file = self.media_files[index]["name"]
@@ -171,15 +179,18 @@ class MediaOrganizerUI:
 
     # Mark as a movie or tv show
     def mark_as_movie(self):
+        """Button action to mark media as Movie."""
         self.update_media_type("Movie")
         self.enable_movie_info()
 
     def mark_as_tv(self):
+        """Button action to mark media as TV episode."""
         self.update_media_type("TV")
         self.enable_tv_info()
 
     # Rename and move files
     def organize_files(self):
+        """Button action to organize files with given information."""
         # Make sure folder has been selected
         if not self.current_directory:
             messagebox.showwarning("Warning", "Select a folder first")
@@ -214,5 +225,6 @@ class MediaOrganizerUI:
             messagebox.showwarning("Warning", "Select a file first")
 
     def set_default_directory(self):
+        """Button action to set default directory."""
         logic.set_default_directory(self.current_directory)
         messagebox.showinfo("Done", f"Default directory set to {self.current_directory}")
