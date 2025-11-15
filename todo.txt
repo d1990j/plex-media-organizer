@@ -1,0 +1,3 @@
+TODO
+
+>> Fix error when default directory is set to a directory that no longer exists
