@@ -10,7 +10,7 @@ class MediaOrganizerUI:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Plex Media Organizer")
-        self.root.geometry("850x600")
+        ##self.root.geometry("850x600")
 
         # Set up variables
         self.current_directory = logic.get_default_directory()
@@ -18,10 +18,13 @@ class MediaOrganizerUI:
         self.selected_file = dict()
         self.destination_directory = ""
 
-        # Set up folder section
+        ######################### TOP FRAME ######################
+
+        # Set up top frame
         top_frame = tk.Frame(self.root)
         top_frame.pack(pady=10)
 
+        # Set up folder section
         self.browse_button = tk.Button(top_frame, text="Browse Folder", command=self.browse_directory)
         self.browse_button.pack(side=tk.LEFT, padx=5)
 
@@ -31,27 +34,53 @@ class MediaOrganizerUI:
         self.folder_label = tk.Label(top_frame, text=self.current_directory if self.current_directory else "No folder selected")
         self.folder_label.pack(side=tk.LEFT)
 
+        ##################### MIDDLE FRAME ##########################
+        # Set up middle Frame
+        middle_frame = tk.Frame(self.root)
+        middle_frame.pack(pady=10)
+
         # Set up file list
-        self.listbox = tk.Listbox(self.root, width=100, height=15)
-        self.listbox.pack(padx=10)
+        self.listbox = tk.Listbox(middle_frame, width=50, height=15)
+        self.listbox.pack(side=tk.LEFT,padx=10)
+
+        # Set up play button
+
+        self.play_button = tk.Button(middle_frame, text="Play", command=self.play_selected)
+        self.play_button.pack(side=tk.TOP, padx=5)
+
+        # Classification Frame
+        classification_frame = tk.LabelFrame(middle_frame, text="Classification", padx=10, pady=10)
+        classification_frame.pack(side=tk.TOP, padx=10, pady=10)
 
         # Set up Classification buttons
-        button_frame = tk.Frame(self.root)
-        button_frame.pack(pady=10)
 
-        self.movie_button = tk.Button(button_frame, text="Mark as Movie", command=self.mark_as_movie)
+        self.movie_button = tk.Button(classification_frame, text="Mark as Movie", command=self.mark_as_movie)
         self.movie_button.pack(side=tk.LEFT, padx=5)
 
-        self.tv_button = tk.Button(button_frame, text="Mark as TV Episode", command=self.mark_as_tv)
+        self.tv_button = tk.Button(classification_frame, text="Mark as TV Episode", command=self.mark_as_tv)
         self.tv_button.pack(side=tk.LEFT, padx=5)
 
-        self.play_button = tk.Button(button_frame, text="Play", command=self.play_selected)
-        self.play_button.pack(side=tk.LEFT, padx=5)
+        # Set up output frame
+        self.output_frame = tk.LabelFrame(middle_frame, text="Output Folder", padx=10, pady=10)
+        self.output_frame.pack(side=tk.TOP, padx=10, pady=10)
+
+        # Output Button
+        self.output_button = tk.Button(self.output_frame, text="Select Folder", command=self.set_destination_directory)
+        self.output_button.pack(side=tk.TOP)
+
+        # Output Label
+        self.output_label = tk.Label(self.output_frame, text=self.destination_directory if self.destination_directory else "No destination selected")
+        self.output_label.pack(side=tk.TOP)
+
+        ############### BOTTOM FRAME #####################
+
+        self.bottom_frame = tk.Frame(self.root)
+        self.bottom_frame.pack(pady=10)
 
         ### Data entry fields ###
 
         # Movie fields
-        self.movie_frame = tk.LabelFrame(self.root, text="Movie Info", padx=10, pady=10)
+        self.movie_frame = tk.LabelFrame(self.bottom_frame, text="Movie Info", padx=10, pady=10)
 
         tk.Label(self.movie_frame, text="Title:").grid(row=0, column=0)
         self.movie_title_entry = tk.Entry(self.movie_frame, width=25)
@@ -62,7 +91,7 @@ class MediaOrganizerUI:
         self.movie_year_entry.grid(row=0, column=3)
 
         # TV Fields
-        self.tv_frame = tk.LabelFrame(self.root, text="TV Episode Info", padx=10, pady=10)
+        self.tv_frame = tk.LabelFrame(self.bottom_frame, text="TV Episode Info", padx=10, pady=10)
 
         tk.Label(self.tv_frame, text="Show Name:").grid(row=0, column=0)
         self.show_name_entry = tk.Entry(self.tv_frame, width=25)
@@ -80,17 +109,10 @@ class MediaOrganizerUI:
         self.show_episode_entry = tk.Entry(self.tv_frame, width=5)
         self.show_episode_entry.grid(row=0, column=7)
 
-        # Destination Button
-        self.destination_button = tk.Button(root, text="Destination", command=self.set_destination_directory)
-
-        # Destination Label
-        self.destination_frame = tk.Frame(self.root)
-        self.destination_label = tk.Label(self.destination_frame, text=self.destination_directory if self.destination_directory else "No destination selected")
-        self.destination_label.pack(side=tk.LEFT)
-        #
+        
 
         # Organize Button
-        self.organize_button = tk.Button(root, text="Organize files", bg="red", command=self.organize_files)
+        self.organize_button = tk.Button(self.bottom_frame, text="Organize files", bg="red", command=self.organize_files)
 
         # If there was a default directory, load media files
         if self.current_directory:
@@ -104,15 +126,19 @@ class MediaOrganizerUI:
         self.movie_frame.pack(pady=5)
 
         # Reset the destination button
-        self.destination_button.pack_forget()
-        self.destination_button.pack(pady=10)
-        self.destination_frame.pack_forget()
-        self.destination_frame.pack(pady=10)
+        self.output_button.pack_forget()
+        self.output_button.pack(pady=10)
+        self.output_frame.pack_forget()
+        self.output_frame.pack(pady=10)
 
         # Reset the organize button
         self.organize_button.pack_forget()
         self.organize_button.pack(pady=10)
         self.organize_button.config(bg="lightgreen" if self.destination_directory else "red")
+
+        # Set color of movie button and reset
+        self.movie_button.config(bg="lightgreen")
+        self.tv_button.config(bg="SystemButtonFace")
 
     def enable_tv_info(self):
         """Configure available buttons based on media type."""
@@ -121,15 +147,19 @@ class MediaOrganizerUI:
         self.tv_frame.pack(pady=5)
 
         # Reset the destination button
-        self.destination_button.pack_forget()
-        self.destination_button.pack(pady=10)
-        self.destination_frame.pack_forget()
-        self.destination_frame.pack(pady=10)
+        self.output_button.pack_forget()
+        self.output_button.pack(pady=10)
+        self.output_frame.pack_forget()
+        self.output_frame.pack(pady=10)
 
         # Reset the organize button
         self.organize_button.pack_forget()
         self.organize_button.pack(pady=10)
         self.organize_button.config(bg="lightgreen" if self.destination_directory else "red")
+
+        # Set color of tv button and reset
+        self.movie_button.config(bg="SystemButtonFace")
+        self.tv_button.config(bg="lightgreen")
 
     # Clear all entry fields
     def clear_entries(self):
@@ -137,6 +167,8 @@ class MediaOrganizerUI:
         self.movie_title_entry.delete(0, tk.END)
         self.movie_year_entry.delete(0, tk.END)
         self.show_episode_entry.delete(0, tk.END)
+        self.movie_button.config(bg="SystemButtonFace")
+        self.tv_button.config(bg="SystemButtonFace")
 
     # Update media to new type
     def update_media_type(self, new_type):
@@ -266,5 +298,5 @@ class MediaOrganizerUI:
     def set_destination_directory(self):
         """Button action to set destination directory."""
         self.destination_directory = filedialog.askdirectory(initialdir=self.current_directory if self.current_directory else os.getcwd())
-        self.destination_label.config(text=f"Folder: {self.destination_directory}")
+        self.output_label.config(text=f"Folder: {self.destination_directory}")
         self.organize_button.config(bg="lightgreen")
