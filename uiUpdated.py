@@ -8,6 +8,7 @@ class PlexMediaOrganizerUIUPdated:
         self.root = root
         self.logic = logic
         self.root.title("Plex Media Organizer")
+        self.root.geometry("850x600")
 
         #################### Current Directory Widget ######################
         # Set up current directory frame

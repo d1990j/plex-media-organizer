@@ -163,7 +163,7 @@ class persistantLogic:
 
         for m in self.media_files:
             if m["type"] == "Movie":
-                file = self.media_files[self.selected_file_index]
+                file = m
                 title = file["new_name"]
                 year = file["year"]
 
@@ -181,12 +181,30 @@ class persistantLogic:
                 shutil.move(old_path, new_path)
 
             elif m["type"] == "TV":
-                pass
+                file = m
+                title = file["new_name"]
+                year = file["year"]
+                season = file["season"]
+                episode = file["episode"]
+
+                # Record the old path to the file
+                old_path = os.path.join(self.current_directory, file["name"])
+
+                # Create the new folder structure and make the directory
+                dest_dir = os.path.join(self.destination_directory, "TV Shows", f"{title} ({year})", f"Season {season.zfill(2)}")
+                os.makedirs(dest_dir, exist_ok=True)
+
+                # Move the file
+                ext = os.path.splitext(file["name"])[1]
+                new_name = f"{title} ({year}) - S{season.zfill(2)}E{episode.zfill(2)}{ext}"
+                new_path = os.path.join(dest_dir, new_name)
+                shutil.move(old_path, new_path)
+
             else:
                 pass
 
-            # Display completion message
-            messagebox.showinfo("Done", "Files have been organized into plex folders")
+        # Display completion message
+        messagebox.showinfo("Done", "Files have been organized into plex folders")
 
-            # Reload the media files
-            self.load_media_files()
+        # Reload the media files
+        self.load_media_files()
