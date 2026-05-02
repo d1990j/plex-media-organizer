@@ -3,6 +3,7 @@ import os
 import json
 from pathlib import Path
 import shutil
+from tkinter import filedialog, messagebox
 
 DEFAULT_CONFIG = {
     "default_directory": ""
@@ -13,6 +14,9 @@ CONFIG_FILENAME = "config.json"
 class persistantLogic:
     def __init__(self):
         self.current_directory = self.get_default_directory()
+        self.media_files = [] # (filename type)
+        self.selected_file = dict()
+        self.destination_directory = ""
 
     def get_default_directory(self):
         """Return the absolute path to the default directory."""
@@ -54,3 +58,16 @@ class persistantLogic:
                 json.dump(config, f, indent=4, sort_keys=True)
         except OSError as exc:
             print(f"Failed to write config file: {exc}")
+
+    def browse_directory(self):
+        """Open a dialog to select a directory and then refresh the list."""
+        self.current_directory = filedialog.askdirectory(initialdir=self.current_directory if self.current_directory else os.getcwd())
+        #self.load_media_files()
+
+    def set_default_directory(self):
+        """Set the default directory to use on startup."""
+        config = self.load_config()
+        config["default_directory"] = self.current_directory
+        self.save_config(config)
+
+        messagebox.showinfo("Done", f"Default directory set to {self.current_directory}")

@@ -6,6 +6,7 @@ from logicUpdated import persistantLogic
 class PlexMediaOrganizerUIUPdated:
     def __init__(self, root: tk.Tk, logic: persistantLogic):
         self.root = root
+        self.logic = logic
         self.root.title("Plex Media Organizer")
 
         #################### Current Directory Widget ######################
@@ -17,13 +18,13 @@ class PlexMediaOrganizerUIUPdated:
         default_button = tk.Button(current_directory_frame, text="Set Default", command=self.default_button_clicked)
 
         # Set up current directory label
-        current_directory_label = tk.Label(current_directory_frame, text=logic.current_directory if logic.current_directory else "No folder selected")
+        self.current_directory_label = tk.Label(current_directory_frame, text=self.logic.current_directory if self.logic.current_directory else "No folder selected")
 
         # Pack current directory frame items
         current_directory_frame.pack(pady=10,padx=10)
         browser_button.pack(side=tk.LEFT, padx=5, pady=5)
         default_button.pack(side=tk.LEFT, padx=5, pady=5)
-        current_directory_label.pack(side=tk.LEFT, padx=5, pady=5)
+        self.current_directory_label.pack(side=tk.LEFT, padx=5, pady=5)
 
         ##################### Middle Frame ##############################
         middle_frame = tk.Frame(root)
@@ -99,9 +100,12 @@ class PlexMediaOrganizerUIUPdated:
 
     def browse_button_clicked(self):
         print("Browse Clicked")
+        self.logic.browse_directory()
+        self.refresh_ui()
 
     def default_button_clicked(self):
         print("Default clicked")
+        self.logic.set_default_directory()
 
     def movie_stage_button_clicked(self):
         # Send to console for testing
@@ -150,6 +154,12 @@ class PlexMediaOrganizerUIUPdated:
     def organize_button_clicked(self):
         print("Organize media")
 
+    def refresh_ui(self):
+        print("refresh")
+
+        # Update current path label
+        self.current_directory_label.config(text=self.logic.current_directory)
+
 # root = tk.Tk()
 
 # root.title("Plex Media Organizer")
@@ -163,13 +173,13 @@ class PlexMediaOrganizerUIUPdated:
 # default_button = tk.Button(current_directory_frame, text="Set Default")
 
 # # Set up current directory label
-# current_directory_label = tk.Label(current_directory_frame, text="file/path/here")
+# self.current_directory_label = tk.Label(current_directory_frame, text="file/path/here")
 
 # # Pack current directory frame items
 # current_directory_frame.pack(pady=10,padx=10)
 # browser_button.pack(side=tk.LEFT, padx=5, pady=5)
 # default_button.pack(side=tk.LEFT, padx=5, pady=5)
-# current_directory_label.pack(side=tk.LEFT, padx=5, pady=5)
+# self.current_directory_label.pack(side=tk.LEFT, padx=5, pady=5)
 
 # ##################### Middle Frame ##############################
 # middle_frame = tk.Frame(root)
