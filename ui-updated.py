@@ -25,25 +25,39 @@ current_directory_label.pack(side=tk.LEFT, padx=5, pady=5)
 
 ##################### Middle Frame ##############################
 middle_frame = tk.Frame(root)
+listbox_labelframe = tk.LabelFrame(middle_frame, text="Media Files")
 
 ### File Listbox
-file_listbox = tk.Listbox(middle_frame, width=50, height=15)
+file_listbox = tk.Listbox(listbox_labelframe, width=50, height=15)
 
 ### Movie/TV Show Tabs
 tabControl = ttk.Notebook(middle_frame)
 
-tab1 = ttk.Frame(tabControl)
-tab2 = ttk.Frame(tabControl)
+movieTab = ttk.Frame(tabControl)
+tvTab = ttk.Frame(tabControl)
 
-tabControl.add(tab1, text='Movie')
-tabControl.add(tab2, text='TV Show')
+tabControl.add(movieTab, text='Movie')
+tabControl.add(tvTab, text='TV Show')
 
-ttk.Label(tab1, text="Welcome").grid(column=0, row=0, padx=30, pady=30)
-ttk.Label(tab2, text="Hello world").grid(column=0, row=0, padx=30, pady=30)
+ttk.Label(movieTab, text="Welcome").grid(column=0, row=0, padx=30, pady=30)
+ttk.Label(tvTab, text="Hello world").grid(column=0, row=0, padx=30, pady=30)
 
 # Pack Middle Frame items
 middle_frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=1)
+listbox_labelframe.pack(padx=5, pady=5, side=tk.LEFT, fill=tk.BOTH, expand=1)
 file_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
 tabControl.pack(expand=1, fill="both", side=tk.RIGHT, padx=10)
+
+######################### Bottom Frame #################################
+bottom_frame = tk.Frame(root)
+
+# Buttons
+play_button = tk.Button(bottom_frame, text="Play")
+organize_button =  tk.Button(bottom_frame, text="Organize")
+
+# Pack items
+bottom_frame.pack(padx=10, pady=10, fill=tk.X)
+play_button.pack(side=tk.LEFT, padx=5, pady=5)
+organize_button.pack(side=tk.RIGHT, padx=5, pady=5)
 
 root.mainloop()
