@@ -1,13 +1,15 @@
 from logic import *
 from ui import *
 from uiUpdated import *
+from logicUpdated import persistantLogic
 import tkinter as tk
 
 def main():
 
     # set up UI
     root = tk.Tk()
-    ui = PlexMediaOrganizerUIUPdated(root)
+    logic = persistantLogic()
+    ui = PlexMediaOrganizerUIUPdated(root, logic)
 
     # ui configuration
 

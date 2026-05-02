@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+from logicUpdated import persistantLogic
 
 class PlexMediaOrganizerUIUPdated:
-    def __init__(self, root: tk.Tk):
+    def __init__(self, root: tk.Tk, logic: persistantLogic):
         self.root = root
         self.root.title("Plex Media Organizer")
 
@@ -16,7 +17,7 @@ class PlexMediaOrganizerUIUPdated:
         default_button = tk.Button(current_directory_frame, text="Set Default", command=self.default_button_clicked)
 
         # Set up current directory label
-        current_directory_label = tk.Label(current_directory_frame, text="file/path/here")
+        current_directory_label = tk.Label(current_directory_frame, text=logic.current_directory if logic.current_directory else "No folder selected")
 
         # Pack current directory frame items
         current_directory_frame.pack(pady=10,padx=10)
@@ -114,6 +115,9 @@ class PlexMediaOrganizerUIUPdated:
         print(movie_title, movie_year)
 
         # Initiate function here
+        # >>>Make sure a media is selected in the listbox
+        # >>>Tag as movie
+        # >>>Update the listbox to reflect the desired change
 
         # Clear fields
         self.movie_title_entry.delete(0, END)
@@ -131,6 +135,14 @@ class PlexMediaOrganizerUIUPdated:
 
         # Print for testing
         print(tv_title, tv_year, tv_season, tv_episode)
+
+        # Initiate function here
+
+        # Clear entry fields
+        self.tv_title_entry.delete(0, END)
+        self.tv_year_entry.delete(0, END)
+        self.tv_season_entry.delete(0, END)
+        self.tv_episode_entry.delete(0, END)
 
     def play_button_clicked(self):
         print("Play media")
