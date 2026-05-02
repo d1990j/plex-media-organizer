@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import shutil
 from tkinter import filedialog, messagebox
+import tkinter as tk
 
 DEFAULT_CONFIG = {
     "default_directory": ""
@@ -59,10 +60,13 @@ class persistantLogic:
         except OSError as exc:
             print(f"Failed to write config file: {exc}")
 
-    def browse_directory(self):
-        """Open a dialog to select a directory and then refresh the list."""
+    def browse_current_directory(self):
+        """Open a dialog to select a directory"""
         self.current_directory = filedialog.askdirectory(initialdir=self.current_directory if self.current_directory else os.getcwd())
-        #self.load_media_files()
+
+    def browse_destination_directory(self):
+        """Open a dialog to select a directory"""
+        self.destination_directory = filedialog.askdirectory(initialdir=self.current_directory if self.current_directory else os.getcwd())
 
     def set_default_directory(self):
         """Set the default directory to use on startup."""
@@ -71,3 +75,24 @@ class persistantLogic:
         self.save_config(config)
 
         messagebox.showinfo("Done", f"Default directory set to {self.current_directory}")
+
+    def stage_movie(self, title: str, year: str):
+        print(title, year)
+
+    # Refresh the list with updated media files
+    def refresh_list(self, listbox: tk.Listbox):
+        """Clear all data in the listbox and repopulate with media files."""
+        listbox.delete(0, tk.END)
+        for m in self.media_files:
+            listbox.insert(tk.END, f"{m['name']}")
+
+    def load_media_files(self):
+        """Attempt to load the media files in the current directory."""
+        # If a directory is chosen
+        if self.current_directory:
+            # Reset media files
+            self.media_files = []
+
+            for file in os.listdir(self.current_directory):
+                if file.lower().endswith((".mp4", ".mkv", ".avi", ".mov", ".mp3", ".flac", ".txt")):
+                        self.media_files.append({"name": file, "type": "Unassigned"})

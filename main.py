@@ -10,6 +10,7 @@ def main():
     root = tk.Tk()
     logic = persistantLogic()
     ui = PlexMediaOrganizerUIUPdated(root, logic)
+    #ui = MediaOrganizerUI(root)
 
     # ui configuration
 

@@ -12,26 +12,32 @@ class PlexMediaOrganizerUIUPdated:
         #################### Current Directory Widget ######################
         # Set up current directory frame
         current_directory_frame = tk.LabelFrame(root, text="Current Directory")
+        destination_directory_frame = tk.LabelFrame(root, text="Destination Directory")
 
         # Set up buttons
-        browser_button = tk.Button(current_directory_frame, text="Browse Folder", command=self.browse_button_clicked)
+        current_browse_button = tk.Button(current_directory_frame, text="Browse", command=self.current_browse_button_clicked)
         default_button = tk.Button(current_directory_frame, text="Set Default", command=self.default_button_clicked)
+        destination_browse_button = tk.Button(destination_directory_frame, text="Browse", command=self.destination_browse_button_clicked)
 
         # Set up current directory label
         self.current_directory_label = tk.Label(current_directory_frame, text=self.logic.current_directory if self.logic.current_directory else "No folder selected")
+        self.destination_directory_label = tk.Label(destination_directory_frame, text=self.logic.destination_directory if self.logic.destination_directory else "No folder selected.")
 
         # Pack current directory frame items
-        current_directory_frame.pack(pady=10,padx=10)
-        browser_button.pack(side=tk.LEFT, padx=5, pady=5)
-        default_button.pack(side=tk.LEFT, padx=5, pady=5)
+        current_directory_frame.pack(side=tk.TOP, pady=5,padx=5, fill=tk.X, expand=1)
+        current_browse_button.pack(side=tk.LEFT, padx=5, pady=5)
         self.current_directory_label.pack(side=tk.LEFT, padx=5, pady=5)
+        default_button.pack(side=tk.RIGHT, padx=5, pady=5)
+        destination_directory_frame.pack(padx=5, pady=5, side=tk.TOP, fill=tk.X, expand=1)
+        destination_browse_button.pack(side=tk.LEFT, padx=5, pady=5)
+        self.destination_directory_label.pack(side=tk.LEFT, padx=5, pady=5)
 
         ##################### Middle Frame ##############################
         middle_frame = tk.Frame(root)
         listbox_labelframe = tk.LabelFrame(middle_frame, text="Media Files")
 
         ### File Listbox
-        file_listbox = tk.Listbox(listbox_labelframe, width=50, height=15)
+        self.file_listbox = tk.Listbox(listbox_labelframe, width=50, height=15)
 
         ### Movie/TV Show Tabs
         mediaTabs = ttk.Notebook(middle_frame)
@@ -83,7 +89,7 @@ class PlexMediaOrganizerUIUPdated:
         # Pack Middle Frame items
         middle_frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=1)
         listbox_labelframe.pack(padx=5, pady=5, side=tk.LEFT, fill=tk.BOTH, expand=1)
-        file_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=1, padx=5, pady=5)
+        self.file_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=1, padx=5, pady=5)
         mediaTabs.pack(expand=1, fill="both", side=tk.RIGHT, padx=10)
 
         ######################### Bottom Frame #################################
@@ -98,14 +104,22 @@ class PlexMediaOrganizerUIUPdated:
         play_button.pack(side=tk.LEFT, padx=5, pady=5)
         organize_button.pack(side=tk.RIGHT, padx=5, pady=5)
 
-    def browse_button_clicked(self):
+
+    ##################### UI Functions ##################################
+    def current_browse_button_clicked(self):
         print("Browse Clicked")
-        self.logic.browse_directory()
+        self.logic.browse_current_directory()
+        self.logic.load_media_files()
         self.refresh_ui()
 
     def default_button_clicked(self):
         print("Default clicked")
         self.logic.set_default_directory()
+
+    def destination_browse_button_clicked(self):
+        print("Destination browse clicked")
+        self.logic.browse_destination_directory()
+        self.refresh_ui()
 
     def movie_stage_button_clicked(self):
         # Send to console for testing
@@ -116,10 +130,11 @@ class PlexMediaOrganizerUIUPdated:
         movie_year = self.movie_year_entry.get()
 
         # Print for testing
-        print(movie_title, movie_year)
+        #print(movie_title, movie_year)
 
         # Initiate function here
         # >>>Make sure a media is selected in the listbox
+        self.logic.stage_movie(movie_title, movie_year)
         # >>>Tag as movie
         # >>>Update the listbox to reflect the desired change
 
@@ -160,6 +175,14 @@ class PlexMediaOrganizerUIUPdated:
         # Update current path label
         self.current_directory_label.config(text=self.logic.current_directory)
 
+        # Update destination path label
+        self.destination_directory_label.config(text=self.logic.destination_directory)
+
+        # Update the listbox
+        self.logic.refresh_list(self.file_listbox)
+
+    
+
 # root = tk.Tk()
 
 # root.title("Plex Media Organizer")
@@ -169,7 +192,7 @@ class PlexMediaOrganizerUIUPdated:
 # current_directory_frame = tk.LabelFrame(root, text="Current Directory")
 
 # # Set up buttons
-# browser_button = tk.Button(current_directory_frame, text="Browse Folder")
+# current_browse_button = tk.Button(current_directory_frame, text="Browse Folder")
 # default_button = tk.Button(current_directory_frame, text="Set Default")
 
 # # Set up current directory label
@@ -177,7 +200,7 @@ class PlexMediaOrganizerUIUPdated:
 
 # # Pack current directory frame items
 # current_directory_frame.pack(pady=10,padx=10)
-# browser_button.pack(side=tk.LEFT, padx=5, pady=5)
+# current_browse_button.pack(side=tk.LEFT, padx=5, pady=5)
 # default_button.pack(side=tk.LEFT, padx=5, pady=5)
 # self.current_directory_label.pack(side=tk.LEFT, padx=5, pady=5)
 
@@ -186,7 +209,7 @@ class PlexMediaOrganizerUIUPdated:
 # listbox_labelframe = tk.LabelFrame(middle_frame, text="Media Files")
 
 # ### File Listbox
-# file_listbox = tk.Listbox(listbox_labelframe, width=50, height=15)
+# self.file_listbox = tk.Listbox(listbox_labelframe, width=50, height=15)
 
 # ### Movie/TV Show Tabs
 # mediaTabs = ttk.Notebook(middle_frame)
@@ -238,7 +261,7 @@ class PlexMediaOrganizerUIUPdated:
 # # Pack Middle Frame items
 # middle_frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=1)
 # listbox_labelframe.pack(padx=5, pady=5, side=tk.LEFT, fill=tk.BOTH, expand=1)
-# file_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=1, padx=5, pady=5)
+# self.file_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=1, padx=5, pady=5)
 # mediaTabs.pack(expand=1, fill="both", side=tk.RIGHT, padx=10)
 
 # ######################### Bottom Frame #################################
