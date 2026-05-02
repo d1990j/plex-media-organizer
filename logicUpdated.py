@@ -16,7 +16,7 @@ class persistantLogic:
     def __init__(self):
         self.current_directory = self.get_default_directory()
         self.media_files = [] # (filename type)
-        self.selected_file = dict()
+        self.selected_file_index = 0
         self.destination_directory = ""
 
     def get_default_directory(self):
@@ -27,6 +27,12 @@ class persistantLogic:
     def get_config_path(self) -> Path:
         """Return the absolute path to the config file."""
         return Path(__file__).with_name(CONFIG_FILENAME)
+    
+    def set_selected_file(self, index):
+        self.selected_file_index = index
+        print("selected file is ", self.media_files[self.selected_file_index])
+        # self.selected_file = self.media_files[index]
+        # print("selected file set to ", self.selected_file)
     
     def load_config(self) -> dict:
         """Load the config from disk, falling back to defaults if missing or corrupt."""
@@ -77,14 +83,35 @@ class persistantLogic:
         messagebox.showinfo("Done", f"Default directory set to {self.current_directory}")
 
     def stage_movie(self, title: str, year: str):
-        print(title, year)
+        #print(title, year)
+
+        # Set the new name property of the selected media file
+        self.media_files[self.selected_file_index]["new_name"] = f"{title} ({year})"
+
+        # Set the media type
+        self.media_files[self.selected_file_index]["type"] = "Movie"
+
+        print("Name updated to", self.media_files[self.selected_file_index])
+
+    def stage_tv(self, title: str, year: str, season: str, episode: str):
+        #print(title, year, season, episode)
+
+        # Set the new name property of the media
+        self.media_files[self.selected_file_index]["new_name"] = f"{title} ({year}) - s{season}e{episode}"
+
+        # Set the media type
+        self.media_files[self.selected_file_index]["type"] = "TV"
 
     # Refresh the list with updated media files
     def refresh_list(self, listbox: tk.Listbox):
         """Clear all data in the listbox and repopulate with media files."""
         listbox.delete(0, tk.END)
         for m in self.media_files:
-            listbox.insert(tk.END, f"{m['name']}")
+            # If there is a new name, show the transition, otherwise leave just the name
+            if m['new_name'] != "":
+                listbox.insert(tk.END, f"{m['name']}     >>>>     {m['new_name']}")
+            else:
+                listbox.insert(tk.END, f"{m['name']}")
 
     def load_media_files(self):
         """Attempt to load the media files in the current directory."""
@@ -95,4 +122,18 @@ class persistantLogic:
 
             for file in os.listdir(self.current_directory):
                 if file.lower().endswith((".mp4", ".mkv", ".avi", ".mov", ".mp3", ".flac", ".txt")):
-                        self.media_files.append({"name": file, "type": "Unassigned"})
+                        self.media_files.append({"name": file, "type": "Unassigned", "new_name": ""})
+
+    def play_selected(self, listbox: tk.Listbox):
+        """Attempt to play the media file selected."""
+        try:
+            index = listbox.curselection()[0]
+            file = self.media_files[index]["name"]
+            filepath = os.path.join(self.current_directory, file)
+            # Determine OS, nt for windows, posix for mac/linux
+            if os.name == "nt":
+                os.startfile(filepath)
+            elif os.name == "posix":
+                subprocess.call(["xdg-open", filepath])
+        except:
+            messagebox.showwarning("Warning", "Please select a file to play")

@@ -38,6 +38,7 @@ class PlexMediaOrganizerUIUPdated:
 
         ### File Listbox
         self.file_listbox = tk.Listbox(listbox_labelframe, width=50, height=15)
+        self.file_listbox.bind('<<ListboxSelect>>', self.on_listbox_selection)
 
         ### Movie/TV Show Tabs
         mediaTabs = ttk.Notebook(middle_frame)
@@ -142,6 +143,9 @@ class PlexMediaOrganizerUIUPdated:
         self.movie_title_entry.delete(0, END)
         self.movie_year_entry.delete(0, END)
 
+        # Refresh UI
+        self.refresh_ui()
+
     def tv_stage_button_clicked(self):
         # Send to console for testing
         print("Stage tv")
@@ -156,21 +160,29 @@ class PlexMediaOrganizerUIUPdated:
         print(tv_title, tv_year, tv_season, tv_episode)
 
         # Initiate function here
+        self.logic.stage_tv(tv_title, tv_year, tv_season, tv_episode)
 
         # Clear entry fields
-        self.tv_title_entry.delete(0, END)
-        self.tv_year_entry.delete(0, END)
-        self.tv_season_entry.delete(0, END)
         self.tv_episode_entry.delete(0, END)
 
+        # refresh UI
+        self.refresh_ui()
+
     def play_button_clicked(self):
-        print("Play media")
+        self.logic.play_selected(self.file_listbox)
 
     def organize_button_clicked(self):
         print("Organize media")
 
+    def on_listbox_selection(self, event):
+        selection = self.file_listbox.curselection()
+        if selection:
+            index = selection[0]
+            self.logic.set_selected_file(index)
+            print("Index changed to ", index)
+
     def refresh_ui(self):
-        print("refresh")
+        print("REFRESH")
 
         # Update current path label
         self.current_directory_label.config(text=self.logic.current_directory)
