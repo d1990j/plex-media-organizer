@@ -86,7 +86,8 @@ class persistantLogic:
         #print(title, year)
 
         # Set the new name property of the selected media file
-        self.media_files[self.selected_file_index]["new_name"] = f"{title} ({year})"
+        self.media_files[self.selected_file_index]["new_name"] = title
+        self.media_files[self.selected_file_index]["year"] = year
 
         # Set the media type
         self.media_files[self.selected_file_index]["type"] = "Movie"
@@ -97,7 +98,10 @@ class persistantLogic:
         #print(title, year, season, episode)
 
         # Set the new name property of the media
-        self.media_files[self.selected_file_index]["new_name"] = f"{title} ({year}) - s{season}e{episode}"
+        self.media_files[self.selected_file_index]["new_name"] = title
+        self.media_files[self.selected_file_index]["year"] = year
+        self.media_files[self.selected_file_index]["season"] = season
+        self.media_files[self.selected_file_index]["episode"] = episode
 
         # Set the media type
         self.media_files[self.selected_file_index]["type"] = "TV"
@@ -107,9 +111,11 @@ class persistantLogic:
         """Clear all data in the listbox and repopulate with media files."""
         listbox.delete(0, tk.END)
         for m in self.media_files:
-            # If there is a new name, show the transition, otherwise leave just the name
-            if m['new_name'] != "":
-                listbox.insert(tk.END, f"{m['name']}     >>>>     {m['new_name']}")
+            # If there is a new name and media type, show the transition, otherwise leave just the name
+            if m["type"] == "Movie":
+                listbox.insert(tk.END, f"{m['name']}     >>>>     {m['new_name']} ({m['year']})")
+            elif m["type"] == "TV":
+                listbox.insert(tk.END, f"{m['name']}     >>>>     {m['new_name']} ({m['year']}) - s{m['season']}e{m['episode']}")
             else:
                 listbox.insert(tk.END, f"{m['name']}")
 
@@ -122,7 +128,7 @@ class persistantLogic:
 
             for file in os.listdir(self.current_directory):
                 if file.lower().endswith((".mp4", ".mkv", ".avi", ".mov", ".mp3", ".flac", ".txt")):
-                        self.media_files.append({"name": file, "type": "Unassigned", "new_name": ""})
+                        self.media_files.append({"name": file, "type": "Unassigned", "new_name": "", "year": "", "season": "", "episode": ""})
 
     def play_selected(self, listbox: tk.Listbox):
         """Attempt to play the media file selected."""
@@ -137,3 +143,50 @@ class persistantLogic:
                 subprocess.call(["xdg-open", filepath])
         except:
             messagebox.showwarning("Warning", "Please select a file to play")
+
+    def organize_files(self):
+        # Make sure working directories are available
+        if not self.current_directory:
+            messagebox.showwarning("Warning", "Select a folder first")
+            return
+        
+        if not self.destination_directory:
+            messagebox.showwarning("Warning", "Select a destination folder.")
+            return
+        
+        # For each media file
+        # >> If has media type selected
+        # >> If "Movie" Organize as needed
+        # >> If "TV" Organize as is
+        # >> Provide message of completion
+        # >> Reload the files
+
+        for m in self.media_files:
+            if m["type"] == "Movie":
+                file = self.media_files[self.selected_file_index]
+                title = file["new_name"]
+                year = file["year"]
+
+                # Record the old path to the file
+                old_path = os.path.join(self.current_directory, file["name"])
+
+                # Create the new folder structure and make the directory
+                folder_name = f"{title} ({year})" if year else title
+                dest_dir = os.path.join(self.destination_directory, "Movies", folder_name)
+                os.makedirs(dest_dir, exist_ok=True)
+
+                # Move the file
+                ext = os.path.splitext(file["name"])[1]
+                new_path = os.path.join(dest_dir, f"{folder_name}{ext}")
+                shutil.move(old_path, new_path)
+
+            elif m["type"] == "TV":
+                pass
+            else:
+                pass
+
+            # Display completion message
+            messagebox.showinfo("Done", "Files have been organized into plex folders")
+
+            # Reload the media files
+            self.load_media_files()
