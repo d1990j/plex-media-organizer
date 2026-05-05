@@ -1,3 +1,4 @@
 TODO
 
->> Fix error when default directory is set to a directory that no longer exists
+>> Create User Preferences page
+>> Organize files, clean up unneded code or notations, add needed notations
