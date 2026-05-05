@@ -2,12 +2,13 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from logicUpdated import persistantLogic
+import constants as const
 
 class PlexMediaOrganizerUIUPdated:
     def __init__(self, root: tk.Tk, logic: persistantLogic):
         self.root = root
         self.logic = logic
-        self.root.title("Plex Media Organizer")
+        self.root.title("Plex Media Organizer" + " " + const.VERSION)
         self.root.geometry("850x600")
 
         #################### Current Directory Widget ######################
