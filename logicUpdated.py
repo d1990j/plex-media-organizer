@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 from tkinter import filedialog, messagebox
 import tkinter as tk
+import constants as const
 
 DEFAULT_CONFIG = {
     "default_directory": ""

@@ -1,6 +1,7 @@
 from uiUpdated import *
 from logicUpdated import persistantLogic
 import tkinter as tk
+import constants as const
 
 def main():
 
